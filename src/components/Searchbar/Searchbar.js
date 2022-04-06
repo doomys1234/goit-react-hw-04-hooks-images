@@ -1,10 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import s from './Searchbar.module.scss';
 import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 export default function Searchbar({ onSubmit }) {
   const [value, setValue] = useState('');
-  const [images, setImages] = useState([]);
 
   // useEffect(() => {
   //   if(value === '')
@@ -15,7 +14,6 @@ export default function Searchbar({ onSubmit }) {
     const normalisedValue = e.currentTarget.value.toLowerCase();
 
     setValue(normalisedValue);
-    setImages([]);
   };
 
   const handleSubmit = e => {
@@ -26,7 +24,7 @@ export default function Searchbar({ onSubmit }) {
       return;
     }
 
-    onSubmit({ value, images });
+    onSubmit({ value });
     setValue('');
   };
 

@@ -18,11 +18,15 @@ export default function App() {
   const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
-    const KEY = '24630234-63d298eb892b3c6f0ac62f70f';
-
     if (imgValue === '') {
       return;
     }
+
+    fetchImages();
+  }, [imgValue, page]);
+
+  const fetchImages = () => {
+    const KEY = '24630234-63d298eb892b3c6f0ac62f70f';
     setStatus('pending');
     fetch(
       `https://pixabay.com/api/?q=${imgValue}&page=${page}&key=${KEY}&image_type=photo&orientation=horizontal&per_page=12`,
@@ -43,34 +47,40 @@ export default function App() {
         });
 
         setImages(prevState => [...prevState, ...arrImages]);
+        scrollToBottom();
 
         // if (page > 1) {
-
-        //   // window.scrollTo({
-        //   //   top: document.documentElement.scrollHeight,
-        //   //   behavior: "smooth",
-        //   // });
+        //   console.log('scroll');
+        //   window.scrollTo({
+        //     top: 0,
+        //     behavior: "smooth",
+        //   });
         // }
+
         setStatus('resolved');
       })
       .catch(error => setStatus('rejected'));
-  }, [imgValue, page]);
+  };
 
-  const onSubmit = ({ value, images }) => {
-    console.log('app', imgValue);
-    console.log('input', value);
+  const scrollToBottom = () => {
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: 'smooth',
+    });
+  };
+
+  const onSubmit = ({ value }) => {
     if (value === imgValue) {
       toast.error('Вы сейчас это ищете');
       return;
     }
     setPage(1);
     setValue(value);
-    setImages(images);
+    setImages([]);
   };
 
   const loadMore = () => {
-    setPage(prevState => prevState + 1);
-    console.log(page + 1);
+    setPage(page + 1);
   };
 
   const toggleModal = e => {
@@ -86,12 +96,11 @@ export default function App() {
     <div>
       <Searchbar onSubmit={onSubmit} />
 
-      {status === 'resolved' && (
-        <ImageGallery
-          images={images}
-          onImageClick={largeImageUrl => onImageClick(largeImageUrl)}
-        />
-      )}
+      <ImageGallery
+        images={images}
+        onImageClick={largeImageUrl => onImageClick(largeImageUrl)}
+      />
+
       {status === 'pending' && (
         <BallTriangle color="#00BFFF" height={100} width={100} timeout={3000} />
       )}
